@@ -133,3 +133,6 @@ venv.bak/
 
 To-do.txt
 test/
+
+# test files
+*-test.py
