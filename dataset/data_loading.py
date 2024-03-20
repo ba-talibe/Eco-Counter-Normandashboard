@@ -173,6 +173,7 @@ def load_dataset(path, parse_dates=False, index_col="id", update=True):
 
     df = pd.read_csv(csv_file_path, parse_dates=True, index_col="date")
     df.index = pd.to_datetime(df.index, utc=True)
+    df["date"] = df.index
     return df
 
 
