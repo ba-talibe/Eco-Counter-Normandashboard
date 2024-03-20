@@ -1,12 +1,16 @@
 import plotly.express as px
-from dataset import resample_data, get_localisation_data, add_counter_location
+from dataset import resample_data, get_localisation_data, add_counter_location, prepare_bar_data, frequencies_to_column
 from ipyleaflet import Map, CircleMarker
 from IPython.display import display
 
-def line_plot(df, names, frequency):
-    data = resample_data(df, names, frequency=frequency)
+def line_plot(df, names, frequency, x_col="date", y_col="counts"):
+    data = resample_data(df, [name for name in names if name != None], frequency=frequency)
     return px.line(data,x="date", y="counts", color="name")
 
+def bar_plot(df, names, frequency, start_date=None, end_date=None, x_col="date", y_col="counts"):
+    data = prepare_bar_data(df, names, start_date=start_date, end_date=end_date, frequency_column=frequency)
+    print(data)
+    return px.bar(data,x=frequencies_to_column[frequency], y="counts", color="name", barmode="group",)
 
 def update_time(df, time):
     data_localisation = get_localisation_data()
