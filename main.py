@@ -1,68 +1,70 @@
-from dash import Dash, html, dash_table,dcc, callback, Output, Input
 import os
 from dataset import *
-from charts import line_plot, update_time
+from charts import *
+from components import *
+import pandas as pd
+from dash import Dash, html, dcc, callback, Output, Input
+import dash_bootstrap_components as dbc
 
 
-print(os.getcwd())
+
 
 # update and load dataset
 df = load_dataset("dataset", update=False)
-
-
-app = Dash(__name__)
 f = list(frequencies.keys())
-app.layout = html.Div([
-    html.Div(children='Compteur Vélo Sabine'),
-    html.Div([
-        dcc.Dropdown(counters_list(df), counters_list(df)[0], id="counter-dropdown"),
-        dcc.Dropdown(f,f[0], id="frequency-dropdown")
-        ]),
 
-        html.Div([
-            dcc.DatePickerSingle(
-                id="date-range",
-                min_date_allowed=df.index[-1],
-                max_date_allowed=df.index[0],
-                date=df.index[0]
-            )
-        ]),
-    html.Div([
-        # The id here should match the ID used in the JavaScript below
-        html.Div(id="map-container"),
-        # JavaScript to render the ipyleaflet map
-        dcc.Markdown("""
-        ```javascript
-        // JavaScript to render the ipyleaflet map
-        const ipyleafletMap = document.querySelector("#map-container");
-        const mapJSON = {data: JSON.parse(`{{data}}`), layout: JSON.parse(`{{layout}}`), config: JSON.parse(`{{config}}`)};
-        const mapFigure = window.PyDeck.Deck(jsonString, ipyleafletMap);
-        mapFigure.render();
-        ```
-        """)
+#global shared input
+selected_counter = Input(component_id='selected-counter', component_property='value')
+
+app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+
+
+app.layout = dbc.Container([
+    dbc.Row([
+       dbc.Col([
+           dcc.Markdown("# Compteur Vélo Sabine", style={ 'text-align' : 'center'})
+       ], width=12)
     ]),
-    dcc.Graph(figure={}, id='time-graph')
+    html.Hr(),
+    dbc.Row([
+        dbc.Col([
+            dcc.Markdown("## Liste des compteurs : ", style={ 'text-align' : 'center'}),
+       ], width=3),
+        dbc.Col([
+            dcc.Dropdown(counters_list(df), counters_list(df)[0], id="selected-counter")
+       ], width=9)
+    ]),
+    html.Hr(),
+    line_plot_container(df),
+    bar_plot_container(df)
+
 ])
-
-@callback(Output(component_id='time-graph', component_property='figure'),
-        Input(component_id='counter-dropdown', component_property='value'), 
-        Input(component_id='frequency-dropdown', component_property='value'))
-def update_line(name, frequency):
-    fig1 = line_plot(df,[name], frequency)
-    return fig1
+# dcc.Dropdown(f,f[0], id="frequency-dropdown")
+@callback(*line_plot_Output, selected_counter, *line_plot_Input)
+def update_line_plot(selected_counter, name, frequency, start_date, end_date):
+    date_value = pd.to_datetime(start_date)
+    return line_plot(df,[selected_counter, name], frequency)
 
 
-@callback(
-        Output(component_id="map-container", component_property="children"),
-        Input(component_id='date-range', component_property='date')
+@callback(*bar_plot_Output, selected_counter, *bar_plot_Input)
+def update_bar_plot(selected_counter, name, frequency, start_date, end_date):
+    date_value = pd.to_datetime(start_date)
+    return bar_plot(df,[selected_counter, name], frequency)
+
+
+
+# @callback(
+#         Output(component_id="map-container", component_property="children"),
+#         Input(component_id='date-range', component_property='date')
         
-        )
-def map_updater(date):
-    return {
-        "data": update_time(df, date).to_dict(),
-        "layout": "",
-        "config": ""
-    }
+#         )
+# def map_updater(date):
+#     return {
+#         "data": update_time(prepare_map_data(df), date).to_dict(),
+#         "layout": "",
+#         "config": ""
+#     }
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True,  port=8000)
+    print("[+] Done")
