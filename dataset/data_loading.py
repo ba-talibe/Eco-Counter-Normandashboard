@@ -202,14 +202,14 @@ def add_counter_location(df):
     # Fusion des DataFrames df et data_localisation_df sur la colonne 'name'
     df_merged = pd.merge(df, data_localisation_df[['name', 'coordinates']], how='left', on='name')
 
-    months = df_merged['Month-Year'].unique()
+    months = df_merged['month'].unique()
 
     # Création de la liste de dictionnaires
     result_data = []
     for mois in months:
         for nom in df_merged['name'].unique():
             # Filtrage des données pour le mois et le nom
-            filtered_data = df_merged[(df_merged['name'] == nom) & (df_merged['Month-Year'] == mois)]
+            filtered_data = df_merged[(df_merged['name'] == nom) & (df_merged['month'] == mois)]
             # Calcul de la somme des valeurs de la colonne 'counts' pour ces données filtrées
             sum_count = filtered_data['counts'].sum()
             # Ajout des données à la liste de dictionnaires
