@@ -19,6 +19,11 @@ frequencies_to_column = {
     "annuelle" : "year"
 }
 
+heatmap_column  = {
+    "journaliere" : "day_name",
+    "mensuelle" : "month_name",
+}
+
 def process_data(df):
     df['Time'] = pd.to_datetime(df['Date_JJMMAA HH:MM'].str.split('+').str[0],format="%Y-%m-%dT%H:%M:%S")
     df['Date'] = pd.to_datetime(df['Date_JJMMAA'])
@@ -30,6 +35,54 @@ def process_data(df):
     
 def counters_list(df):
     return sorted(df['name'].unique())
+
+
+
+def prepare_heatmap_data(df, counter_names: list, start_date=None, end_date=None, period=None, heatmap_freq='journaliere'):
+    if end_date is None:
+        end_date = df.index[0]
+    else:
+        end_date = pd.to_datetime(end_date, format='%d-%m-%Y')
+
+    if start_date is None:
+        if period is not None:
+            start_date = end_date - timedelta(days=period)
+        else:
+            start_date = df.index[-1]
+    else:
+        start_date = pd.to_datetime(start_date, format='%d-%m-%Y')
+
+    date_range = pd.date_range(start=start_date, end=end_date, freq="H")
+    date_range = date_range.intersection(df.index)
+    #data = df[df['name'].isin(counter_names)]
+    data = df[["counts"]].loc[date_range].groupby([pd.Grouper(freq="h")]).mean()
+
+
+
+    data["date"] = data.index
+    data['month_name'] = data['date'].dt.strftime('%B')
+    data["day_name"] = data['date'].dt.day_name()
+    data["hours"] = data.date.dt.hour
+
+
+    month_order = [
+        'January', 'February', 'March', 'April', 'May', 'June', 'July',
+        'August', 'September', 'October', 'November', 'December'
+    ]
+
+    day_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+
+
+    categorie = day_order if heatmap_freq == "journaliere" else month_order
+
+    data[heatmap_column[heatmap_freq]] = pd.Categorical(data[heatmap_column[heatmap_freq]], categories=categorie, ordered=True)
+
+
+    heatmap_data = data.pivot_table(index='hours', columns=heatmap_column[heatmap_freq], values='counts', aggfunc='mean', fill_value=0)
+
+    return heatmap_data
+
+
 
 def prepare_bar_data(df, counter_names: List, start_date=None, end_date=None, period=None, frequency_column='journaliere'):
     
@@ -159,8 +212,4 @@ if __name__ == '__main__':
 
     df = load_dataset(os.getcwd()+"/dataset/", update=False)
 
-    end_date = df.index[0]
-    start_date = end_date - timedelta(days=7)
-
-
-    resample_data(df, ["Eco 28 - Pont Jaurès ELBEUF", "Eco 00 - Quai du Havre ROUEN"], "20-12-2023", "20-02-2024")
+    print(prepare_heatmap_data(df, heatmap_freq="journaliere"))
