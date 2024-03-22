@@ -2,7 +2,6 @@ import dash_bootstrap_components as dbc
 from dash import dcc, html, Input, Output
 import dash_leaflet as dl
 from dash_leaflet import CircleMarker
-import geopandas as gpd
 from dataset import  get_localisation_data
 
 

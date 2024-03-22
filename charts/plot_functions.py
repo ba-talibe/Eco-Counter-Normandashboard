@@ -1,7 +1,9 @@
 import plotly.express as px
-from dataset import resample_data, get_localisation_data, add_counter_location, prepare_bar_data, frequencies_to_column
-from ipyleaflet import Map, CircleMarker
-from IPython.display import display
+import dash_leaflet as dl
+from dataset import resample_data, prepare_bar_data, prepare_map_data, frequencies_to_column
+
+
+
 
 def line_plot(df, names, frequency, x_col="date", y_col="counts"):
     data = resample_data(df, [name for name in names if name != None], frequency=frequency)
@@ -12,37 +14,31 @@ def bar_plot(df, names, frequency, start_date=None, end_date=None, x_col="date",
     print(data)
     return px.bar(data,x=frequencies_to_column[frequency], y="counts", color="name", barmode="group",)
 
-def update_time(df, time):
-    data_localisation = get_localisation_data()
-    df = add_counter_location(df)
-    map_center = [data_localisation['results'][0]['coordinates']['lat'], data_localisation['results'][0]['coordinates']['lon']]
-    m = Map(center=map_center, zoom=10)
-    time = time.strftime("%m-%Y")
-    if time in df['mois'].unique():
-        max_volume = df['volume_month'].max()
-        
-        for record in data_localisation['results']:
-            lon = record['coordinates']['lon']
-            lat = record['coordinates']['lat']
-            
-            # Filtrage des données en fonction du temps
-            filtered_data = df[(df['mois'] == time) & (df['name'] == record['name'])]
-            volume = filtered_data['volume_month'].iloc[0] if not filtered_data.empty else 0
-            
-            # Calcul du rayon proportionnel au volume maximal
-            scaled_radius = int(volume / max_volume * 50)  # 10 est le rayon maximal souhaité
-            
-            circle_marker = CircleMarker(location=(lat, lon), radius=scaled_radius, color="red", fill_color="red")
-            m.add_layer(circle_marker)
+def render_map(df, selected_time, geojson_data, data_localisation):
+    df = prepare_map_data(df)
+    map_children = [
+        dl.TileLayer(url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
+    ]
     
-    #display(m)
-    return m
+    # Si la valeur sélectionnée est nulle, utilisez le premier mois de la liste
+    if not selected_time:
+        selected_time = df['mois'].iloc[0]
+    
+    max_volume = df['volume_month'].max()
+    
+    for record in data_localisation['results']:
+        lon = record['coordinates']['lon']
+        lat = record['coordinates']['lat']
+      
+        filtered_data = df[(df['mois'] == selected_time) & (df['name'] == record['name'])]
+        volume = filtered_data['volume_month'].iloc[0] if not filtered_data.empty else 0
+        
+        scaled_radius = int(volume / max_volume * 50)
+        
+        circle_marker = dl.CircleMarker(center=(lat, lon), radius=scaled_radius, color="red", fillColor="red")
+        map_children.append(circle_marker)
+    
+    # Ajouter la couche GeoJSON (exemple fictif)
+    map_children.append(dl.GeoJSON(data=geojson_data))
 
-    # # Créer un slider interactif pour sélectionner une plage de dates
-    # dates = [(date.month, date.year) for date in pd.date_range(start='2022-04-01', end='2024-02-01', freq='M')]
-    # date_strings = [f"{month}-{year}" for month, year in dates]
-
-    # time_slider = widgets.SelectionSlider(options=date_strings, description='Time Range:', layout={'width': '500px'})
-
-    # # Mettre à jour la carte en fonction de la valeur du curseur
-    # widgets.interact(update_time, time=time_slider)
+    return map_children

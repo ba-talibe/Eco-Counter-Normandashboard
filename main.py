@@ -1,4 +1,3 @@
-import os
 from dataset import *
 from charts import *
 from components import *
@@ -25,6 +24,7 @@ app.layout = dbc.Container([
            dcc.Markdown("# Compteur Vélo Sabine", style={ 'text-align' : 'center'})
        ], width=12)
     ]),
+    map_container(prepare_map_data(df)),
     html.Hr(),
     dbc.Row([
         dbc.Col([
@@ -53,17 +53,11 @@ def update_bar_plot(selected_counter, name, frequency, start_date, end_date):
 
 
 
-# @callback(
-#         Output(component_id="map-container", component_property="children"),
-#         Input(component_id='date-range', component_property='date')
-        
-#         )
-# def map_updater(date):
-#     return {
-#         "data": update_time(prepare_map_data(df), date).to_dict(),
-#         "layout": "",
-#         "config": ""
-#     }
+@callback(*map_Output, *map_Input)
+def update_map(selected_time):
+    return render_map(df, selected_time, geojson_data, data_localisation)
+
+
 
 if __name__ == '__main__':
     app.run(debug=True,  port=8000)
