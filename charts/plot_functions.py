@@ -1,6 +1,6 @@
 import plotly.express as px
 import dash_leaflet as dl
-from dataset import resample_data, prepare_bar_data, prepare_map_data, frequencies_to_column
+from dataset import resample_data, prepare_bar_data,prepare_heatmap_data, prepare_map_data, frequencies_to_column
 
 
 
@@ -13,6 +13,14 @@ def bar_plot(df, names, frequency, start_date=None, end_date=None, x_col="date",
     data = prepare_bar_data(df, names, start_date=start_date, end_date=end_date, frequency_column=frequency)
     print(data)
     return px.bar(data,x=frequencies_to_column[frequency], y="counts", color="name", barmode="group",)
+
+def plot_heatmap(df, names, frequency, start_date=None, end_date=None):
+    data = prepare_heatmap_data(df, names, frequency)
+
+    fig = px.imshow(data.to_numpy(), x=data.columns, y=data.index, color_continuous_scale='Viridis', aspect="auto")
+    fig.update_traces(text=data.to_numpy(), texttemplate="%{text}")
+    fig.update_xaxes(side="top")
+    return fig
 
 def render_map(df, selected_time, geojson_data, data_localisation):
     df = prepare_map_data(df)

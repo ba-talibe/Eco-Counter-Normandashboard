@@ -20,8 +20,8 @@ frequencies_to_column = {
 }
 
 heatmap_column  = {
-    "journaliere" : "day_name",
-    "mensuelle" : "month_name",
+    "jours" : "day_name",
+    "mois" : "month_name",
 }
 
 def process_data(df):
@@ -54,7 +54,7 @@ def prepare_heatmap_data(df, counter_names: list, start_date=None, end_date=None
 
     date_range = pd.date_range(start=start_date, end=end_date, freq="H")
     date_range = date_range.intersection(df.index)
-    #data = df[df['name'].isin(counter_names)]
+    data = df[df['name'].isin(counter_names)]
     data = df[["counts"]].loc[date_range].groupby([pd.Grouper(freq="h")]).mean()
 
 
@@ -83,18 +83,18 @@ def prepare_heatmap_data(df, counter_names: list, start_date=None, end_date=None
     return heatmap_data
 
 def add_time_columns(df):
-        data = df.copy()
-        day_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-        data["date"] = data.index
-        data["day_name"] = data.date.dt.day_name()
-        data['day_name'] = pd.Categorical(data['day_name'], categories=day_order, ordered=True) 
-        data["hour"] = data.date.dt.hour
-        data['year'] = data['date'].dt.year
-        data['month'] = data['date'].dt.strftime('%b-%Y')
-        return data
+    data = df.copy()
+    day_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    data["date"] = data.index
+    data["day_name"] = data.date.dt.day_name()
+    data['day_name'] = pd.Categorical(data['day_name'], categories=day_order, ordered=True) 
+    data["hour"] = data.date.dt.hour
+    data['year'] = data['date'].dt.year
+    data['month'] = data['date'].dt.strftime('%b-%Y')
+    return data
 
 
-def prepare_bar_data(df, counter_names: List, start_date=None, end_date=None, period=None, frequency_column='journaliere'):
+def prepare_bar_data(df, counter_names: List, start_date=None, end_date=None, period=None, frequency_column='jours'):
     
     def get_data_by_counter(name):
         date_range = pd.date_range(start=start_date, end=end_date, freq="H")
@@ -121,13 +121,8 @@ def prepare_bar_data(df, counter_names: List, start_date=None, end_date=None, pe
             start_date = df.index[-1]
     else:
         start_date = pd.to_datetime(start_date, format='%d-%m-%Y')
-
-
     
-    data  = pd.concat([get_data_by_counter(name) for name in counter_names])
-
-
-    return data
+    return pd.concat([get_data_by_counter(name) for name in counter_names])
     
 
 def resample_data(df, counter_names: List, start_date=None, end_date=None, period=None, frequency='journaliere'):
