@@ -25,6 +25,7 @@ app.layout = dbc.Container([
        ], width=12)
     ]),
     map_container(prepare_map_data(df)),
+    heatmap_container(df),
     html.Hr(),
     dbc.Row([
         dbc.Col([
@@ -57,6 +58,9 @@ def update_bar_plot(selected_counter, name, frequency, start_date, end_date):
 def update_map(selected_time):
     return render_map(df, selected_time, geojson_data, data_localisation)
 
+@callback(*heatmap_Output, *heatmap_Input)
+def update_heatmap(selected_counter, frequency, start_date, end_date):
+    return plot_heatmap(df,[selected_counter], frequency)
 
 
 if __name__ == '__main__':

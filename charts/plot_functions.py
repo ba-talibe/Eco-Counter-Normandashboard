@@ -11,14 +11,12 @@ def line_plot(df, names, frequency, x_col="date", y_col="counts"):
 
 def bar_plot(df, names, frequency, start_date=None, end_date=None, x_col="date", y_col="counts"):
     data = prepare_bar_data(df, names, start_date=start_date, end_date=end_date, frequency_column=frequency)
-    print(data)
     return px.bar(data,x=frequencies_to_column[frequency], y="counts", color="name", barmode="group",)
 
 def plot_heatmap(df, names, frequency, start_date=None, end_date=None):
-    data = prepare_heatmap_data(df, names, frequency)
-
+    data = prepare_heatmap_data(df, names, heatmap_freq=frequency)
     fig = px.imshow(data.to_numpy(), x=data.columns, y=data.index, color_continuous_scale='Viridis', aspect="auto")
-    fig.update_traces(text=data.to_numpy(), texttemplate="%{text}")
+    fig.update_traces(text=data.to_numpy(), texttemplate="%{z:.0f}")
     fig.update_xaxes(side="top")
     return fig
 

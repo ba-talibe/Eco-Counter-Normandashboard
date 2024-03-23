@@ -38,7 +38,7 @@ def counters_list(df):
 
 
 
-def prepare_heatmap_data(df, counter_names: list, start_date=None, end_date=None, period=None, heatmap_freq='journaliere'):
+def prepare_heatmap_data(df, counter_names: list, heatmap_freq, start_date=None, end_date=None, period=None ):
     if end_date is None:
         end_date = df.index[0]
     else:
@@ -73,7 +73,7 @@ def prepare_heatmap_data(df, counter_names: list, start_date=None, end_date=None
     day_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
 
-    categorie = day_order if heatmap_freq == "journaliere" else month_order
+    categorie = day_order if heatmap_freq == "jours" else month_order
 
     data[heatmap_column[heatmap_freq]] = pd.Categorical(data[heatmap_column[heatmap_freq]], categories=categorie, ordered=True)
 

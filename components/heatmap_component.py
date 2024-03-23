@@ -1,9 +1,9 @@
 import dash_bootstrap_components as dbc
 from dash import dcc, html, Input, Output
-from dataset import counters_list, frequencies_to_column
+from dataset import counters_list, heatmap_column
 
 
-heatmap_frequency = list(frequencies_to_column.keys())
+heatmap_frequency = list(heatmap_column.keys())
 
 
 heatmap_Output = (
@@ -12,24 +12,35 @@ heatmap_Output = (
 
 heatmap_Input = (
     Input(component_id='heatmap-counter-dropdown', component_property='value'),
-    Input(component_id='heatmap-frequency-dropdown', component_property='value')
+    Input(component_id='heatmap-frequency-dropdown', component_property='value'),
+    Input(component_id='heatmap-date-range', component_property='start_date'),
+    Input(component_id='heatmap-date-range', component_property='end_date')
 )
 
 heatmap_container = lambda df: dbc.Container([
         dbc.Row([
             dbc.Col([
+                dcc.Markdown("### Periode : "),
+                dcc.DatePickerRange(
+                    id="heatmap-date-range",
+                    min_date_allowed=df.index[-1],
+                    max_date_allowed=df.index[0],
+                    start_date=df.index[-1],
+                    end_date=df.index[0],
+                )
+            ], width=4),
+            dbc.Col([
                 dcc.Markdown("### Compteurs : "),
                 dcc.Dropdown(["Tous"] + counters_list(df), None, id="heatmap-counter-dropdown")
-            ], width=6),
-
+            ], width=4),
             dbc.Col([
                 dcc.Markdown("### Periode : "),
                 dcc.Dropdown(heatmap_frequency, heatmap_frequency[0], id="heatmap-frequency-dropdown")
-        ], width=6)]
+        ], width=4)]
     ),
     dbc.Row([
             dbc.Col([
                 dcc.Graph(figure={}, id='heatmap-chart')
             ], width=12)
-        ])
+        ], style={'width': '100%', 'height': '50vh'})
     ])
