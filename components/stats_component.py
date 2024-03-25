@@ -5,7 +5,7 @@ from dataset import counters_list, frequencies_to_column
 from charts import plot_top_10_counter
 from dataset import get_stats
 
-velos_hier = 10
+
 upper_arrow = "▲"
 
 lower_arrow = "▼"
@@ -22,53 +22,53 @@ def stats_container(df):
         Col([
             Row([
                 Col([
-                    H4(f"{yesterday_stats[0]}",className="stats-number")
-                ]),
+                    H5(f"{yesterday_stats[0]}",className="stats-number")
+                ], width=4),
                 Col([
                     H6(f"vélos comptabilisés hier sur {29} stations.")
-                ])
+                ], width=8)
             ]),
             Row([
                 Col([
                     H6("Soit"),
-                    H4(f"{lower_arrow if yesterday_stats[2]<0 else upper_arrow} {yesterday_stats[2]:.1f} %", className="stats-number")
-                ]),
+                    H5(f"{lower_arrow if yesterday_stats[2]<0 else upper_arrow} {yesterday_stats[2]:.1f} %", className="stats-number")
+                ], width=4),
                 Col([
                     H6(f"par rapport à la semaine d'avant avec", style={'display': 'inline'}),
                     Span(f" {yesterday_stats[1]}",className="stats-number", style={'display': 'inline'}),
                     H6("vélos sur 7 jours sur 29 stations.")
-                ])
+                ], width=8)
             ]),
             Hr(),
            Row([
                 Col([
-                    H4(f"{last_week[0]}",className="stats-number")
-                ]),
+                    H5(f"{last_week[0]}",className="stats-number")
+                ], width=4),
                 Col([
                     H6(f"vélos comptabilisés sur une semaine (jusqu'hier) sur 7 jours sur 29 stations")
-                ])
+                ], width=8)
             ]),
             Row([
                 Col([
                     H6("Soit"),
-                    H4(f"{lower_arrow if last_week[2]<0 else upper_arrow} {last_week[2]:.1f} %", className="stats-number")
-                ]),
+                    H5(f"{lower_arrow if last_week[2]<0 else upper_arrow} {last_week[2]:.1f} %", className="stats-number")
+                ], width=4),
                 Col([
                     H6(f"par rapport à la semaine d'avant avec", style={'display': 'inline'}),
                     Span(f" {last_week[1]}",className="stats-number", style={'display': 'inline'}),
                     H6("vélos sur 7 jours sur 29 stations.")
-                ])
+                ], width=8)
             ]),
              Row([
                 Col([
                     H6("Et"),
-                    H4(f"{lower_arrow if last_year_same_week[1]<0 else upper_arrow} {last_year_same_week[1]:.1f} %", className="stats-number")
-                ]),
+                    H5(f"{lower_arrow if last_year_same_week[1]<0 else upper_arrow} {last_year_same_week[1]:.1f} %", className="stats-number")
+                ], width=4),
                 Col([
                     H6(f"par rapport à la même semaine l'année dernière avec", style={'display': 'inline'}),
                     Span(f" {last_year_same_week[0]}",className="stats-number", style={'display': 'inline'}),
                     H6("vélos sur 7 jours sur 21 stations.")
-                ])
+                ], width=8)
             ]),
         ], width=3),
         Col([

@@ -15,7 +15,7 @@ f = list(frequencies.keys())
 #global shared input
 selected_counter = Input(component_id='selected-counter', component_property='value')
 
-app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
 
 
 app.layout = dbc.Container([
@@ -25,6 +25,7 @@ app.layout = dbc.Container([
        ], width=12)
     ]),
     map_container(prepare_map_data(df)),
+    station_container(df),
     stats_container(df),
     heatmap_container(df),
     html.Hr(),
