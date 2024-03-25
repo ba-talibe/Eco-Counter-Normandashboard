@@ -37,7 +37,7 @@ def update_dataset(path):
  
 
     # #local_data telecharge depuis serveur
-    local_data = pd.read_json(json_file_path)
+    local_data = pd.read_csv(csv_file_path)
 
     update_data = [] # initialise update_data par une liste
 
@@ -66,7 +66,6 @@ def update_dataset(path):
 
     total_count = response_updateData.json()['total_count']
 
-    print(total_count)
 
     if (total_count != 0) : # le nombre de données mises à jour 
         while (total_count >= 100) : # data limit is 100
@@ -76,10 +75,11 @@ def update_dataset(path):
                 update_local_data(local_data, update_data, json_file_path, csv_file_path)
 
                 update_dataset(path) 
-            update_data.extend(incomming_data["results"])
-            total_count -= 100
-            offset_datacount +=  100
-            api_url_update_data ="https://data.metropole-rouen-normandie.fr/api/explore/v2.1/catalog/datasets/eco-counter-data/records?where=date%3Edate'"+dateEtHeure+"%3A00%3A00%2B01%3A00'&order_by=date%20DESC&limit="+str(limit_datacount)+"&offset="+str(offset_datacount)+"&timezone=Europe%2FBerlin"
+            else:
+                update_data.extend(incomming_data["results"])
+                total_count -= 100
+                offset_datacount +=  100
+                api_url_update_data ="https://data.metropole-rouen-normandie.fr/api/explore/v2.1/catalog/datasets/eco-counter-data/records?where=date%3Edate'"+dateEtHeure+"%3A00%3A00%2B01%3A00'&order_by=date%20DESC&limit="+str(limit_datacount)+"&offset="+str(offset_datacount)+"&timezone=Europe%2FBerlin"
 
         limit_datacount = total_count
         api_url_update_data ="https://data.metropole-rouen-normandie.fr/api/explore/v2.1/catalog/datasets/eco-counter-data/records?where=date%3Edate'"+dateEtHeure+"%3A00%3A00%2B01%3A00'&order_by=date%20DESC&limit="+str(limit_datacount)+"&offset="+str(offset_datacount)+"&timezone=Europe%2FBerlin"
@@ -144,9 +144,9 @@ def update_csv_dataset(path):
 
     total_count = response_updateData.json()['total_count']
 
-    print(total_count)
 
     if (total_count != 0) : # le nombre de données mises à jour 
+        print("updating data")
         while (total_count >= 100) : # data limit is 100
             update_data.extend(requests.get(api_url_update_data).json()['results'])
             total_count -= 100
@@ -220,5 +220,4 @@ def add_counter_location(df):
 
 
 if __name__ == '__main__':
-    #load_dataset(os.getcwd() + "/data_toolset")
-    print("Done")
+    load_dataset(os.getcwd() + "/dataset")

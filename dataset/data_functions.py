@@ -24,6 +24,7 @@ heatmap_column  = {
     "mois" : "month_name",
 }
 
+counters_list = lambda df : sorted(df['name'].unique())
 def process_data(df):
     df['Time'] = pd.to_datetime(df['Date_JJMMAA HH:MM'].str.split('+').str[0],format="%Y-%m-%dT%H:%M:%S")
     df['Date'] = pd.to_datetime(df['Date_JJMMAA'])
@@ -32,29 +33,39 @@ def process_data(df):
     df['DayOfWeek'] = df['Date'].dt.day_of_week
     df['Hour'] = df['Time'].dt.hour
     df['Month-Year'] = pd.to_datetime(df['Month'].astype(str)+'-'+df['Year'].astype(str))
+
+def get_top_10_days(df):
+    daily_counts = df.groupby('date_j')['counts'].sum().reset_index()
+
+    # Trier par ordre décroissant pour obtenir les jours les plus fréquentés en premier
+    top_10_days = daily_counts.sort_values(by='counts', ascending=False).head(10)
+
+    top_10_days['date_j'] = pd.to_datetime(top_10_days['date_j'], format='%Y-%m-%d')
+    top_10_days['date_j'] = top_10_days['date_j'].dt.strftime('%d %B %Y')
+    return top_10_days
+
+
+
+def get_date_range(df, start_date, end_date, period=None, frequency='H'):
+    end_date = pd.to_datetime(df.index[0], ) if end_date is None else pd.to_datetime(end_date, utc=True)
     
-def counters_list(df):
-    return sorted(df['name'].unique())
-
-
-
-def prepare_heatmap_data(df, counter_names: list, heatmap_freq, start_date=None, end_date=None, period=None ):
-    if end_date is None:
-        end_date = df.index[0]
-    else:
-        end_date = pd.to_datetime(end_date, format='%d-%m-%Y')
-
     if start_date is None:
         if period is not None:
             start_date = end_date - timedelta(days=period)
         else:
-            start_date = df.index[-1]
+            start_date = pd.to_datetime(df.index[-1])
     else:
-        start_date = pd.to_datetime(start_date, format='%d-%m-%Y')
+        start_date = pd.to_datetime(start_date, utc=True)
 
-    date_range = pd.date_range(start=start_date, end=end_date, freq="H")
+    date_range = pd.date_range(start=start_date, end=end_date, freq=frequency)
     date_range = date_range.intersection(df.index)
-    data = df[df['name'].isin(counter_names)]
+    return date_range
+
+def prepare_heatmap_data(df, counter_name, heatmap_freq, start_date=None, end_date=None, period=None ):
+    
+    date_range = get_date_range(df, start_date, end_date)
+    if counter_name != "Tous":
+        data = df[df['name'] == counter_name]
     data = df[["counts"]].loc[date_range].groupby([pd.Grouper(freq="h")]).mean()
 
 
@@ -78,9 +89,13 @@ def prepare_heatmap_data(df, counter_names: list, heatmap_freq, start_date=None,
     data[heatmap_column[heatmap_freq]] = pd.Categorical(data[heatmap_column[heatmap_freq]], categories=categorie, ordered=True)
 
 
-    heatmap_data = data.pivot_table(index='hours', columns=heatmap_column[heatmap_freq], values='counts', aggfunc='mean', fill_value=0)
-
-    return heatmap_data
+    return data.pivot_table(
+        index='hours',
+        columns=heatmap_column[heatmap_freq],
+        values='counts',
+        aggfunc='mean',
+        fill_value=0,
+    )
 
 def add_time_columns(df):
     data = df.copy()
@@ -97,8 +112,6 @@ def add_time_columns(df):
 def prepare_bar_data(df, counter_names: List, start_date=None, end_date=None, period=None, frequency_column='jours'):
     
     def get_data_by_counter(name):
-        date_range = pd.date_range(start=start_date, end=end_date, freq="H")
-        date_range = date_range.intersection(df.index)
         data = df.loc[date_range]
         data = data.loc[data.name==name]
 
@@ -108,49 +121,24 @@ def prepare_bar_data(df, counter_names: List, start_date=None, end_date=None, pe
         data["name"] = name
         data[frequencies_to_column[frequency_column]] = data.index
         return data
-    
-    if end_date is None:
-        end_date = df.index[0]
-    else:
-        end_date = pd.to_datetime(end_date, format='%d-%m-%Y')
 
-    if start_date is None:
-        if period is not None:
-            start_date = end_date - timedelta(days=period)
-        else:
-            start_date = df.index[-1]
-    else:
-        start_date = pd.to_datetime(start_date, format='%d-%m-%Y')
-    
+    date_range = get_date_range(df, start_date, end_date)
+
     return pd.concat([get_data_by_counter(name) for name in counter_names])
     
 
 def resample_data(df, counter_names: List, start_date=None, end_date=None, period=None, frequency='journaliere'):
+
     
     def get_data_by_counter(name):
-        date_range = pd.date_range(start=start_date, end=end_date, freq="H")
-        date_range = date_range.intersection(df.index)
         data = df.loc[date_range]
         data = data.loc[data.name==name, ["counts", "name"]].resample(frequencies[frequency]).sum(numeric_only=True)
         data["name"] = name
         data["date"] = data.index
         return data
-    
-    if end_date is None:
-        end_date = df.index[0]
-    else:
-        end_date = pd.to_datetime(end_date, format='%d-%m-%Y')
 
-    if start_date is None:
-        if period is not None:
-            start_date = end_date - timedelta(days=period)
-        else:
-            start_date = df.index[-1]
-    else:
-        start_date = pd.to_datetime(start_date, format='%d-%m-%Y')
+    date_range = get_date_range(df, start_date, end_date)
 
-
-    
     data  = pd.concat([get_data_by_counter(name) for name in counter_names])
     return data
 
@@ -174,6 +162,6 @@ if __name__ == '__main__':
 
 
 
-    df = load_dataset(os.getcwd()+"/dataset/", update=False)
+    df = load_dataset(f"{os.getcwd()}/dataset/", update=False)
 
     print(prepare_heatmap_data(df, heatmap_freq="journaliere"))

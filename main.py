@@ -9,7 +9,7 @@ import dash_bootstrap_components as dbc
 
 
 # update and load dataset
-df = load_dataset("dataset", update=False)
+df = load_dataset("dataset", update=True)
 f = list(frequencies.keys())
 
 #global shared input
@@ -25,6 +25,7 @@ app.layout = dbc.Container([
        ], width=12)
     ]),
     map_container(prepare_map_data(df)),
+    stats_container(df),
     heatmap_container(df),
     html.Hr(),
     dbc.Row([
@@ -44,13 +45,12 @@ app.layout = dbc.Container([
 @callback(*line_plot_Output, selected_counter, *line_plot_Input)
 def update_line_plot(selected_counter, name, frequency, start_date, end_date):
     date_value = pd.to_datetime(start_date)
-    return line_plot(df,[selected_counter, name], frequency)
+    return line_plot(df,[selected_counter, name], frequency, start_date=start_date, end_date=end_date)
 
 
 @callback(*bar_plot_Output, selected_counter, *bar_plot_Input)
 def update_bar_plot(selected_counter, name, frequency, start_date, end_date):
-    date_value = pd.to_datetime(start_date)
-    return bar_plot(df,[selected_counter, name], frequency)
+    return bar_plot(df,[selected_counter, name], frequency, start_date=start_date, end_date=end_date)
 
 
 
@@ -60,7 +60,7 @@ def update_map(selected_time):
 
 @callback(*heatmap_Output, *heatmap_Input)
 def update_heatmap(selected_counter, frequency, start_date, end_date):
-    return plot_heatmap(df,[selected_counter], frequency)
+    return plot_heatmap(df,selected_counter, frequency)
 
 
 if __name__ == '__main__':
