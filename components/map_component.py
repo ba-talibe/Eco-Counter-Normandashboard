@@ -33,7 +33,11 @@ lat = data_localisation['results'][5]['coordinates']['lat']
 lon = data_localisation['results'][5]['coordinates']['lon']
 
 map_container = lambda df: dbc.Container([
-   html.Div([
+    html.Hr(),
+    html.H2('Volume par Mois'),
+    html.Br(),
+
+    html.Div([
         html.Div(['Select Month'], style={'width': '37%', 'display': 'inline-block'}),
         dcc.Dropdown(
             id='month-dropdown',
@@ -42,8 +46,9 @@ map_container = lambda df: dbc.Container([
             placeholder='Select a month'
         )
     ]),
+
+    html.Br(),
     html.Div([
-        html.H2('Add Shapes to Map an Area of Interest'),
         dl.Map(
             id='leaflet-map',
             style={'width': '100%', 'height': '50vh'},

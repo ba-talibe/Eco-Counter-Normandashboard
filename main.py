@@ -19,16 +19,37 @@ app = Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
 
 
 app.layout = dbc.Container([
+    html.Br(),
+    html.Br(),
     dbc.Row([
        dbc.Col([
-           dcc.Markdown("# Compteur Vélo Sabine", style={ 'text-align' : 'center'})
+           dcc.Markdown("# Fréquentation des Pistes Cyclables", style={ 'text-align' : 'center'})
        ], width=12)
     ]),
     map_container(prepare_map_data(df)),
-    station_container(df),
-    stats_container(df),
-    heatmap_container(df),
+
+    html.Br(),
     html.Hr(),
+    station_container(df),
+
+    html.Br(),
+    html.Hr(),
+    stats_container(df),
+
+    html.Br(),
+    html.Hr(),
+    html.H2("Passages Moyens Horaires"),
+    html.Br(),
+    heatmap_container(df),
+
+
+    html.Br(),
+    html.Br(),
+    html.Br(),
+    html.Br(),
+    html.Hr(),
+    html.H2("Tendance Temporelle"),
+    html.Br(),
     dbc.Row([
         dbc.Col([
             dcc.Markdown("## Liste des compteurs : ", style={ 'text-align' : 'center'}),
@@ -37,9 +58,25 @@ app.layout = dbc.Container([
             dcc.Dropdown(counters_list(df), counters_list(df)[0], id="selected-counter")
        ], width=9)
     ]),
-    html.Hr(),
+    html.Br(),
     line_plot_container(df),
-    bar_plot_container(df)
+
+    html.Br(),
+    html.Hr(),   
+    html.H2("Evolution au Fil du Temps"),   
+    html.Br(),
+    dbc.Row([
+        dbc.Col([
+            dcc.Markdown("## Liste des compteurs : ", style={ 'text-align' : 'center'}),
+       ], width=3),
+        dbc.Col([
+            dcc.Dropdown(counters_list(df), counters_list(df)[0], id="selected-counter-2")
+       ], width=9)
+    ]),
+    html.Br(),
+    bar_plot_container(df),
+    html.Br(),
+    html.Br()
 
 ])
 # dcc.Dropdown(f,f[0], id="frequency-dropdown")

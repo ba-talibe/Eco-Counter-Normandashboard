@@ -162,6 +162,6 @@ if __name__ == '__main__':
 
 
 
-    df = load_dataset(f"{os.getcwd()}/dataset/", update=False)
+    df = load_dataset(f"{os.getcwd()}/dataset/", update=True)
 
     print(prepare_heatmap_data(df, heatmap_freq="journaliere"))

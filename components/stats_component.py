@@ -4,6 +4,7 @@ from dash.html import  H3, H4, H5, H6, Hr, Span
 from dataset import counters_list, frequencies_to_column
 from charts import plot_top_10_counter
 from dataset import get_stats
+from dash import html
 
 
 upper_arrow = "▲"
@@ -18,6 +19,14 @@ def stats_container(df):
     yesterday_stats, last_week, last_year_same_week = get_stats(df)
     
     return Container([
+    Row([
+            Col([
+                dcc.Markdown("## Statistiques Générales (Toutes Stations Confondues)", style={'text-align': 'left'})
+            ], width=12)
+        ]),
+
+    html.Br(),
+
     Row([
         Col([
             Row([
