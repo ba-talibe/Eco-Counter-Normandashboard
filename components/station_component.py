@@ -1,5 +1,5 @@
 from dash_bootstrap_components import Container, Row , Col, Card, CardBody, CardFooter
-from dash.html import   Span, Img, H2, H6, H5, P
+from dash.html import   Br, Img, H2, H6, H5, P
 from charts import plot_top_10_counter
 from dataset import get_stats
 
@@ -14,7 +14,8 @@ def station_container(df):
     top_stations = station_stats.sort_values(by='average_passages_per_day', ascending=False).head(5)
     top_stations.reset_index()
     return Container([
-        H2("Top 5 des Stations", style={ 'text-align' : 'center'}),
+        H2("Top 5 des Stations", style={ 'text-align' : 'center'}, className="title"),
+        Br(),
         Row([
             Col(
                 [Card([

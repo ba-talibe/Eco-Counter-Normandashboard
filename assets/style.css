@@ -4,6 +4,13 @@
     color : rgb(53, 224, 40)
 }
 
+.title {
+    color : rgb(53, 224, 40);
+    margin-top: 10px;
+    margin-bottom: 10px
+}
+
+
 .chart-container {
     margin-top: 20px;
     margin-bottom: 10px;
@@ -22,3 +29,8 @@
     max-width: 100%; /* Limit the maximum width of the image */
     max-height: 200px; /* Limit the maximum height of the image */
 }
+
+ .Select {
+    color: black;
+}
+
