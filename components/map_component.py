@@ -1,5 +1,6 @@
-import dash_bootstrap_components as dbc
+from dash_bootstrap_components import Row, Col, Container
 from dash import dcc, html, Input, Output
+from dash.html import H3, H4, H5
 import dash_leaflet as dl
 from dash_leaflet import CircleMarker
 from dataset import  get_localisation_data
@@ -32,26 +33,26 @@ data_localisation = get_localisation_data()
 lat = data_localisation['results'][5]['coordinates']['lat']
 lon = data_localisation['results'][5]['coordinates']['lon']
 
-map_container = lambda df: dbc.Container([
+map_container = lambda df: Container([
     html.Hr(),
-    html.H2('Volume par Mois'),
+    html.H2('Volume par Mois', className="title text-center"),
     html.Br(),
-
-    html.Div([
-        html.Div(['Select Month'], style={'width': '37%', 'display': 'inline-block'}),
-        dcc.Dropdown(
-            id='month-dropdown',
-            options=[{'label': month, 'value': month} for month in df['mois'].unique()],
-            value=df['mois'][0],
-            placeholder='Select a month'
-        )
-    ]),
-
-    html.Br(),
-    html.Div([
-        dl.Map(
+    Row([
+        Col([
+            H3("Choisissez un mois", className="sub-title text-left")
+        ], width=4, className="mb-1"),
+        Col([
+            dcc.Dropdown(
+                id='month-dropdown',
+                options=[{'label': month, 'value': month} for month in df['mois'].unique()],
+                value=df['mois'][0],
+                placeholder='Select a month'
+            )
+        ], width=8),
+        Col([
+            dl.Map(
             id='leaflet-map',
-            style={'width': '100%', 'height': '50vh'},
+            style={'width': '100%', 'height': '70vh'},
             center=[lat, lon],
             zoom=10,
             children=[
@@ -60,7 +61,10 @@ map_container = lambda df: dbc.Container([
                     dl.EditControl(id="edit_control"),
                 ]),
                 dl.GeoJSON(id='map-geojsons', data=geojson_data)  # Ajout de la couche GeoJSON
-            ]
-        )
-    ])
-    ])
+                ]
+            )
+        ], width=12)
+    ]),
+    html.Br(),
+    html.Br()
+    ], className="chart-container") 

@@ -1,4 +1,5 @@
 import plotly.express as px
+import plotly.io as pio
 import dash_leaflet as dl
 from dataset import resample_data, get_top_10_days, prepare_bar_data,prepare_heatmap_data, prepare_map_data, frequencies_to_column
 
@@ -13,15 +14,15 @@ def line_plot(df, names, frequency, start_date, end_date, x_col="date", y_col="c
         start_date=start_date, 
         end_date=end_date
         )
-    return px.line(data,x="date", y="counts", color="name")
+    return px.line(data,x="date", y="counts", color="name", color_discrete_sequence=px.colors.qualitative.Dark2)
 
 def bar_plot(df, names, frequency, start_date, end_date, x_col="date", y_col="counts"):
     data = prepare_bar_data(df, names, start_date=start_date, end_date=end_date, frequency_column=frequency)
-    return px.bar(data,x=frequencies_to_column[frequency], y="counts", color="name", barmode="group",)
+    return px.bar(data,x=frequencies_to_column[frequency], y="counts", color="name", barmode="group", color_discrete_sequence=px.colors.qualitative.Dark2)
 
 def plot_heatmap(df, counter_name, frequency, start_date=None, end_date=None):
-    data = prepare_heatmap_data(df, counter_name, heatmap_freq=frequency)
-    fig = px.imshow(data.to_numpy(), x=data.columns, y=data.index, color_continuous_scale='Viridis', aspect="auto")
+    data = prepare_heatmap_data(df, counter_name, heatmap_freq=frequency, start_date=start_date, end_date=end_date)
+    fig = px.imshow(data.to_numpy(), x=data.columns, y=data.index, color_continuous_scale='Greens', aspect="auto")
     fig.update_traces(text=data.to_numpy(), texttemplate="%{z:.0f}")
     fig.update_xaxes(side="top")
     return fig
@@ -47,7 +48,7 @@ def render_map(df, selected_time, geojson_data, data_localisation):
         
         scaled_radius = int(volume / max_volume * 50)
         
-        circle_marker = dl.CircleMarker(center=(lat, lon), radius=scaled_radius, color="red", fillColor="red")
+        circle_marker = dl.CircleMarker(center=(lat, lon), radius=scaled_radius, color="green", fillColor="green")
         map_children.append(circle_marker)
     
     # Ajouter la couche GeoJSON (exemple fictif)
@@ -57,14 +58,17 @@ def render_map(df, selected_time, geojson_data, data_localisation):
 
 def plot_top_10_counter(df):
     top_10_days = get_top_10_days(df)
+    counts_max = top_10_days.counts.max()
+    ylim = counts_max + .2*counts_max
 
     # Créer le graphique à barres interactif avec Plotly
     fig = px.bar(top_10_days, x='date_j', y='counts', color='date_j', title='Top 10 des Jours les Plus Fréquentés (Sommes Journalières)',
-                labels={'date_j': 'Date', 'counts': 'Passages Journaliers'})
+                labels={'date_j': 'Date', 'counts': 'Passages Journaliers'}, color_discrete_sequence=px.colors.qualitative.Dark2)
 
     # Personnaliser l'apparence du graphique
     fig.update_xaxes(tickangle=45, tickfont=dict(size=10))
     fig.update_yaxes(title_text='Passages Journaliers')
+    fig.update_yaxes(range=[0, ylim])
     fig.update_layout(showlegend=False)
 
     # Afficher le graphique

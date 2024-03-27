@@ -15,18 +15,17 @@ stats_Output = (
     Output(component_id='10-most-visited-counter', component_property='figure'),
 )
 
-def stats_container(df):
+def stats_container(df):  # sourcery skip: remove-redundant-fstring
     yesterday_stats, last_week, last_year_same_week = get_stats(df)
     
     return Container([
     Row([
-            Col([
-                dcc.Markdown("## Statistiques Générales (Toutes Stations Confondues)", style={'text-align': 'left'})
-            ], width=12)
-        ]),
-
+        Col([
+            dcc.Markdown("## Statistiques Générales (Toutes Stations Confondues)", className="title text-center")
+        ], width=12)
+    ]),
     html.Br(),
-
+    html.Br(),
     Row([
         Col([
             Row([
@@ -81,10 +80,9 @@ def stats_container(df):
             ]),
         ], width=3),
         Col([
-            dcc.Graph(figure=plot_top_10_counter(df), id='10-most-visited-counter', style={"height" : '100%'})
+            dcc.Graph(figure=plot_top_10_counter(df), id='10-most-visited-counter', style={"height" : '70vh', })
         ], width=9)
         ]),
-    Row([
-
-        ])
+        html.Br(),
+        html.Br()
     ], className="chart-container")
