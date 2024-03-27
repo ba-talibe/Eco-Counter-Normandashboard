@@ -45,7 +45,7 @@ heatmap_container = lambda df: dbc.Container([
             dbc.Col([
                 dcc.Graph(figure={}, id='heatmap-chart', style={'height': '70vh'})
             ], width=12)
-        ], style={'width': '100%', 'height': '60vh'}),
+        ], style={'width': '100%', 'height': 'auto'}),
     html.Br(),
     html.Br()
     ], className="chart-container")

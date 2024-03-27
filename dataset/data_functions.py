@@ -114,7 +114,6 @@ def prepare_bar_data(df, counter_names: List, start_date=None, end_date=None, pe
     def get_data_by_counter(name):
         data = df.loc[date_range]
         data = data.loc[data.name==name]
-
         data = add_time_columns(data)
         #data = data.loc[data.name==name, ["counts", "name"]].resample(frequencies[frequency]).sum(numeric_only=True)
         data = data[["counts", frequencies_to_column[frequency_column]]].groupby(frequencies_to_column[frequency_column]).mean()

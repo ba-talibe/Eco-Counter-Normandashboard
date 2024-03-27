@@ -39,7 +39,7 @@ map_container = lambda df: Container([
     html.Br(),
     Row([
         Col([
-            H4("Choisissez un mois", className="sub-title")
+            H3("Choisissez un mois", className="sub-title text-left")
         ], width=4, className="mb-1"),
         Col([
             dcc.Dropdown(
@@ -52,7 +52,7 @@ map_container = lambda df: Container([
         Col([
             dl.Map(
             id='leaflet-map',
-            style={'width': '100%', 'height': '50vh'},
+            style={'width': '100%', 'height': '70vh'},
             center=[lat, lon],
             zoom=10,
             children=[
@@ -64,5 +64,7 @@ map_container = lambda df: Container([
                 ]
             )
         ], width=12)
-    ])
+    ]),
+    html.Br(),
+    html.Br()
     ], className="chart-container") 
