@@ -47,7 +47,7 @@ def get_top_10_days(df):
 
 
 def get_date_range(df, start_date, end_date, period=None, frequency='H'):
-    end_date = pd.to_datetime(df.index[0], ) if end_date is None else pd.to_datetime(end_date, utc=True)
+    end_date = pd.to_datetime(df.index[0]) if end_date is None else pd.to_datetime(end_date, utc=True)
     
     if start_date is None:
         if period is not None:
