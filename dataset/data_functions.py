@@ -63,10 +63,15 @@ def get_date_range(df, start_date, end_date, period=None, frequency='H'):
 
 def prepare_heatmap_data(df, counter_name, heatmap_freq, start_date=None, end_date=None, period=None ):
     
-    date_range = get_date_range(df, start_date, end_date)
+    
+    df = df.copy()
     if counter_name != "Tous":
-        data = df[df['name'] == counter_name]
+        df = df.loc[df.name == counter_name]
+        
+    date_range = get_date_range(df, start_date, end_date)
     data = df[["counts"]].loc[date_range].groupby([pd.Grouper(freq="h")]).mean()
+    # else:
+    #     data = df.loc[["counts"]].loc[date_range].groupby([pd.Grouper(freq="h")]).mean()
 
 
 
