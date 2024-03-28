@@ -61,5 +61,5 @@ def update_heatmap(selected_counter, frequency, start_date, end_date):
 
 
 if __name__ == '__main__':
-    app.run(debug=True,  port=8000)
+    app.run(port=8000)
     print("[+] Done")
