@@ -9,9 +9,8 @@ import dash_bootstrap_components as dbc
 
 
 # update and load dataset
-df = load_dataset("dataset", update=False)
+df = load_dataset("dataset", update=True)
 f = list(frequencies.keys())
-
 
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
