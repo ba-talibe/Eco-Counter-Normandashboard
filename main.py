@@ -9,14 +9,12 @@ import dash_bootstrap_components as dbc
 
 
 # update and load dataset
-df = load_dataset("dataset", update=False)
+df = load_dataset("dataset", update=True)
 f = list(frequencies.keys())
-
-#global shared input
 
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
-
+server = app.server
 
 app.layout = dbc.Container([
     html.Br(),
@@ -61,5 +59,5 @@ def update_heatmap(selected_counter, frequency, start_date, end_date):
 
 
 if __name__ == '__main__':
-    app.run(debug=True,  port=8000)
+    app.run(port=8000)
     print("[+] Done")

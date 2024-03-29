@@ -14,7 +14,7 @@ geojson_data = {
             "properties": {},
             "geometry": {
                 "type": "Point",
-                "coordinates": [1.0993, 49.4431]  # Exemple de coordonnées (lon, lat)
+                "coordinates": [1.0993, 49.4431]  # Coordinates of Rouen
             }
         }
     ]

@@ -33,7 +33,7 @@ heatmap_container = lambda df: dbc.Container([
         ], width=4),
         dbc.Col([
             dcc.Markdown("### Compteurs : "),
-            dcc.Dropdown(["Tous"] + counters_list(df), None, id="heatmap-counter-dropdown")
+            dcc.Dropdown(["Tous"] + counters_list(df), "Tous", id="heatmap-counter-dropdown")
         ], width=4),
         dbc.Col([
             dcc.Markdown("### Periode : "),
