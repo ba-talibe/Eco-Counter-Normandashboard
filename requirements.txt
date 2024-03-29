@@ -17,7 +17,7 @@ colorama==0.4.6
 comm==0.2.1
 contourpy==1.2.0
 cycler==0.12.1
-dash==2.14.2
+dash==2.16.1
 dash-bootstrap-components==1.5.0
 dash-core-components==2.0.0
 dash-extensions==1.0.14
@@ -39,6 +39,8 @@ Flask-Caching==2.1.0
 fonttools==4.47.2
 frozenlist==1.4.1
 geopandas==0.14.3
+gunicorn==21.2.0
+h11==0.14.0
 idna==3.6
 importlib-metadata==7.0.1
 importlib-resources==6.1.1
@@ -98,6 +100,7 @@ traittypes==0.2.1
 typing_extensions==4.9.0
 tzdata==2023.4
 urllib3==2.1.0
+uvicorn==0.29.0
 wcwidth==0.2.13
 Werkzeug==3.0.1
 widgetsnbextension==4.0.9

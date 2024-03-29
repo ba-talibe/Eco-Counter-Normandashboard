@@ -12,11 +12,10 @@ import dash_bootstrap_components as dbc
 df = load_dataset("dataset", update=False)
 f = list(frequencies.keys())
 
-#global shared input
 
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
-
+server = app.server
 
 app.layout = dbc.Container([
     html.Br(),
